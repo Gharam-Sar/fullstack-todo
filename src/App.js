@@ -3,16 +3,14 @@ import "./App.css";
 import { useState } from "react";
 import { useEffect } from "react";
 import trash from "./imgs/trash.png";
-let todo = [];
 let s = [];
 let searchtask = [];
 let searching = false;
-
+let toto=[];
 if (localStorage.length === 0) {
   localStorage.setItem("ids", 0);
   localStorage.setItem("todo", JSON.stringify(s));
 }
-
 
 
 window.onload = (event) => {
@@ -21,8 +19,10 @@ window.onload = (event) => {
 
 function ToDo({ todo, filterText, toggle }) {
  const handleDelete = async (id) => {
+
 };
   const handleToggle = async (id) => {
+
   };
   return (
     <div className="myDiv" key={todo.id}>
@@ -33,7 +33,7 @@ function ToDo({ todo, filterText, toggle }) {
                         onClick={() => handleToggle( todo.id)}
         >
           {" "}
-          {todo.done ? "✔" : "X"}{" "}
+          {todo.done==1 ? "✔" : "X"}{" "}
         </pp>
 
         <img
@@ -48,7 +48,7 @@ function ToDo({ todo, filterText, toggle }) {
     </div>
   );
 }
-function ToDoSpace({ displaytodo }) {
+function ToDoSpace({ displaytodo,len }) {
   const [filterText, setFilterText] = useState("");
   const [toggle, settoggle] = useState(false);
 
@@ -103,11 +103,11 @@ function AddTask() {
     }
     const result = await response.json();
     console.log(result);
-    
   } catch (err) {
     console.log(err.message);
   }
   
+  window.location.reload(false);
 
 
     
@@ -184,13 +184,35 @@ function Footer() {
   );
 }
 export default function MyApp() {
-         
+  const [todo, setTodo] = useState(0);
 
+  const handleTodos = async () => {
+    try {
      
+      const response = await fetch('/todos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Error! status: ${response.status}`);
+      }
 
-     
-  let storedtodo = JSON.parse(localStorage.getItem("todo"));
+      const result = await response.json();
+      
+      toto=result;
+      console.log(toto);
+      setTodo(result.length);
 
+    } catch (err) {
+      console.log(err.message);
+    }
+    
+   
+  };
+  handleTodos();
   return (
     <div>
       <div className="title">
@@ -203,7 +225,7 @@ export default function MyApp() {
       <hr></hr>
 
       <div>
-        <ToDoSpace displaytodo={storedtodo} />
+        <ToDoSpace displaytodo={toto} len={todo} />
       </div>
 
 
