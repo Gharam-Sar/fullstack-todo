@@ -15,7 +15,7 @@ const app = express();
 
 app.get("/todos", (req, res) => {
   sql = "SELECT * FROM todos";
-  let todo=[];
+  
   dp.all(sql, [], (err, rows) => {
     if (err) return console.log(err.message);
     res.json( rows);
@@ -36,6 +36,18 @@ app.delete("/todos/:todoId", (req, res) => {
 app.put("/todos/:todoId", function (req, res) {
   var todoId = req.params.todoId;
 
+  sql = "SELECT done FROM todos WHERE id=?";
+  
+  dp.all(sql, [todoId], (err, rows) => {
+    if (err) return console.log(err.message);
+  
+  let str= rows[0].done;
+ 
+        sql = "UPDATE todos SET done=? WHERE id=?";
+        dp.run(sql, [str?false:true,todoId], (err) => {
+            if (err) return console.log(err.message);
+          });
+  });
   res.json({ message: todoId });
 });
 app.post("/todos/:task", function (req, res) {
